@@ -1,0 +1,39 @@
+{
+  "name": "@vizmedia/cognito-nest-api",
+  "version": "0.0.1",
+  "description": "Easily configurable NestJS API module to connect to AWS Cognito",
+  "main": "dist/viz-cognito.module.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VizMedia/cognito-nest-api.git"
+  },
+  "keywords": [
+    "nest",
+    "typescript",
+    "cognito"
+  ],
+  "author": "VizMedia - Maciej Filipiak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/VizMedia/cognito-nest-api/issues"
+  },
+  "homepage": "https://github.com/VizMedia/cognito-nest-api#readme",
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity": "^3.454.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.385.0",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/passport": "^10.0.0",
+    "@nestjs/swagger": "^7.1.6",
+    "crypto": "^1.0.1",
+    "jwks-rsa": "^3.1.0",
+    "mongodb": "^6.3.0",
+    "mysql": "^2.18.1",
+    "swagger-ui-express": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21"
+  }
+}
