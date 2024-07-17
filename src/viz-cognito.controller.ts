@@ -130,9 +130,6 @@ export class VizCognitoController {
 		}
 	}
 
-
-	// FORGOT PASSWORD
-
 	@Post('/initiate-password-reset')
 	@HttpCode(200)
 	@ApiBody({ type: InitiatePasswordResetDto })
@@ -166,9 +163,6 @@ export class VizCognitoController {
 			return res.status(400).json({ message: error.message });
 		}
 	}
-
-
-	// CHANGE PASSWORD
 
 	@Post('/change-password')
 	@UseGuards(VizCognitoGuard)
