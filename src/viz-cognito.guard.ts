@@ -27,6 +27,7 @@ export class VizCognitoGuard implements CanActivate {
 			const CognitoUserId = this.extractUserIdFromToken(token);
 			
 			// Sprawdź czy token jest ważny
+      
 			const isUserLoggedIn = await this.cognitoService.isUserLoggedIn(CognitoUserId);
 			if (!isUserLoggedIn) {
 				return false;
@@ -41,6 +42,8 @@ export class VizCognitoGuard implements CanActivate {
         if (error instanceof TokenExpiredError) {
 					
 					// Wykonaj odświeżanie tokena
+
+          console.log('test');
           
           const newTokens = await this.cognitoService.refreshToken(CognitoUserId);
 

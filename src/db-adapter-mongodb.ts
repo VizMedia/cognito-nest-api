@@ -6,12 +6,15 @@ export class MongoDbAdapter implements DatabaseAdapter {
   private client: MongoClient;
 
   constructor(private dbConfig: any) {
-    this.client = new MongoClient(`mongodb://${dbConfig.host}:${dbConfig.port}`, {
-      auth: {
-        username: dbConfig.username,
-        password: dbConfig.password,
-      },
-    });
+    // this.client = new MongoClient(`mongodb://${dbConfig.host}:${dbConfig.port}`, {
+    //   auth: {
+    //     username: dbConfig.username,
+    //     password: dbConfig.password,
+    //   },
+    // });	
+
+	let connectstring = `mongodb://${dbConfig.username}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}`;
+	this.client = new MongoClient(connectstring);
     this.client.connect();
   }
 

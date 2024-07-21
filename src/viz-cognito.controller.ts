@@ -84,8 +84,10 @@ export class VizCognitoController {
 				message: 'Forbidden',
 			});
 		}
-		const CognitoUserId = this.cognitoService.extractUserIdFromToken(idToken);
-		let wynik: boolean = await this.cognitoService.isUserLoggedIn(CognitoUserId);
+		let wynik = false;
+		const CognitoUserId = await this.cognitoService.extractUserIdFromToken(idToken);
+		wynik = await this.cognitoService.isUserLoggedIn(CognitoUserId);
+		console.log('isLogged:', CognitoUserId, wynik);
 		if (!wynik) {
 			return res.status(HttpStatus.UNAUTHORIZED).json({
 				statusCode: 401,
@@ -104,7 +106,7 @@ export class VizCognitoController {
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'AWS SignOut' })
 	async signout(@Req() req, @Res() res: Response): Promise<any> {
-		const idToken = req.headers.authorization?.split(' ')[1];
+		const idToken = await req.headers.authorization?.split(' ')[1];
 		if (!idToken) {
 			return res.status(HttpStatus.FORBIDDEN).json({
 				statusCode: 403,
@@ -114,11 +116,11 @@ export class VizCognitoController {
 
 		// Wyodrębnienie CognitoUserId z tokena
 		const CognitoUserId = this.cognitoService.extractUserIdFromToken(idToken);
-		console.log('CognitoUserId', CognitoUserId);
+		// console.log('CognitoUserId', CognitoUserId);
 		let wynik = await this.cognitoService.signOut(CognitoUserId);
 
 		if (wynik) {
-			return res.status(HttpStatus.OK).json({
+			return await res.status(HttpStatus.OK).json({
 				statusCode: 200,
 				message: 'signout',
 			});
@@ -139,7 +141,7 @@ export class VizCognitoController {
 	): Promise<Response> {
 		try {
 			const response = await this.cognitoService.initiatePasswordReset(username);
-			console.log('status inicjacji',response);
+			// console.log('status inicjacji',response);
 			return res.json(response);
 		} catch (error) {
 			return res.status(400).json({ message: error.message });
@@ -157,7 +159,7 @@ export class VizCognitoController {
 	): Promise<Response> {
 		try {
 			const response = await this.cognitoService.confirmPasswordReset(username, newPassword, confirmationCode);
-			console.log('status potwierdzenia',response);
+			// console.log('status potwierdzenia',response);
 			return res.json(response);
 		} catch (error) {
 			return res.status(400).json({ message: error.message });

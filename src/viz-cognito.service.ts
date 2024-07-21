@@ -31,7 +31,8 @@ export class VizCognitoService {
 		@Inject('VIZ_COGNITO_CONFIG') private readonly config: VizCognitoConfig,
 		private readonly storageService: VizStorageService,
 	) {
-		// this.client = new CognitoIdentityClient({ region: this.config.region });
+		// this.client = new CognitoIdentityClient({ region: this.config.region });   
+		console.log('config', { ...this.config, dbConfig: { ...config.dbConfig, password: '***' }, clientSecret: '***' });
 		this.client = new CognitoIdentityProviderClient({ region: this.config.region });
 		this.jwksClient = jwksClient({
 			jwksUri: `https://cognito-idp.${this.config.region}.amazonaws.com/${this.config.userPoolId}/.well-known/jwks.json`
@@ -39,6 +40,15 @@ export class VizCognitoService {
 
 	}
 
+	/**
+	 * Rejestracja użytkownika
+	 * https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/cognito-identity-provider/command/SignUpCommand/
+	 * @param username 
+	 * @param password 
+	 * @param email 
+	 * @param phone 
+	 * @returns 
+	 */
 	async registerUser(username: string, password: string, email: string, phone: string): Promise<any> {
 		const attributes = [];
 		if (email) {
@@ -62,6 +72,7 @@ export class VizCognitoService {
 			const response = await this.client.send(command);
 			return response;
 		} catch (error) {
+			console.log('regiesterUser Error:', error);
 			throw new Error(error.message);
 		}
 	}
@@ -99,6 +110,7 @@ export class VizCognitoService {
 
 		try {
 			const response = await this.client.send(command);
+
 			if (response.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
 				// Obsłuż scenariusz wymagający zmiany hasła
 				return {
@@ -108,6 +120,14 @@ export class VizCognitoService {
 				};
 			}
 
+
+
+
+
+
+
+
+			
 			// Dekodowanie Tokena ID lub Tokena Dostępu
 			const decodedToken = decode(response.AuthenticationResult?.IdToken) as any;
 			let CognitoUserId: string = decodedToken ? decodedToken.sub : ''; // 'sub' to standardowy claim JWT zawierający identyfikator użytkownika
@@ -124,7 +144,7 @@ export class VizCognitoService {
 				IdToken: response.AuthenticationResult?.IdToken,
 			};
 		} catch (error) {
-			throw new Error(error.message);
+			throw new Error(error.message);			
 		}
 	}
 
@@ -201,7 +221,8 @@ export class VizCognitoService {
 			return !!response;
 		} catch (error) {
 			// Jeśli wystąpi błąd (np. TokenExpiredError), użytkownik nie jest zalogowany
-			console.error(error);
+			// console.error(error);
+			// console.log('isUserLoggedIn:',false );
 			return false;
 		}
 	}
@@ -231,6 +252,8 @@ export class VizCognitoService {
 			};
 
 			await this.storageService.updateCredentials(CognitoUserId, newTokens);
+
+			console.log('refreshToken:', CognitoUserId);
 
 			return newTokens;
 		} catch (error) {
@@ -275,8 +298,6 @@ export class VizCognitoService {
 			Username: username,
 			SecretHash: this.calculateSecretHash(username),
 		});
-
-		console.log('command', command);
 
 		try {
 			const response = await this.client.send(command);
