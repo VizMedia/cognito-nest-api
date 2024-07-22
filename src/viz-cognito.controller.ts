@@ -11,6 +11,7 @@ import { ConfirmPasswordResetDto } from './interfaces/confirm-password-reset';
 import { ChangePassword } from './interfaces/change-password';
 import { RegisterUserDto } from './interfaces/register-user';
 import { ConfirmRegistrationDto } from './interfaces/confirm-registration';
+import { LoginSessionDto } from './interfaces/login-session';
 
 @ApiTags('cognito')
 @Controller('cognito')
@@ -62,7 +63,24 @@ export class VizCognitoController {
 	@ApiBody({ type: LoginDto }) // Tutaj definiujemy ciało żądania	
 	async signIn(@Body() loginDto: LoginDto, @Res() res: Response): Promise<any> {
 		try {
-			const result = await this.cognitoService.signIn(loginDto.emailOrPhone, loginDto.password);
+			const result = await this.cognitoService.signIn(loginDto.emailOrPhone, loginDto.password, loginDto.mfaCode);
+			return res.status(HttpStatus.OK).json(result);
+		} catch (error) {
+			return res.status(HttpStatus.FORBIDDEN).json({
+				statusCode: 403,
+				message: 'Forbidden ' + error.message,
+			});
+		}
+	}
+
+	@Post('/signinsession')
+	@ApiOperation({ summary: 'AWS SignIn' })
+	@ApiResponse({ status: 200, description: 'Returns AWS IdToken - copy this token to Authorization: Bearer .... as http header .' })
+	@ApiResponse({ status: 403, description: 'Forbidden' })
+	@ApiBody({ type: LoginSessionDto }) // Tutaj definiujemy ciało żądania	
+	async signInSession(@Body() loginSession: LoginSessionDto, @Res() res: Response): Promise<any> {
+		try {
+			const result = await this.cognitoService.signInSession(loginSession);
 			return res.status(HttpStatus.OK).json(result);
 		} catch (error) {
 			return res.status(HttpStatus.FORBIDDEN).json({
@@ -97,6 +115,69 @@ export class VizCognitoController {
 			return res.status(HttpStatus.OK).json({
 				statusCode: 200,
 				message: 'ok',
+			});
+		}
+	}
+
+	@Post('/enablemfa_sms')
+	@UseGuards(VizCognitoGuard)
+	@ApiBearerAuth()
+	@ApiOperation({ summary: 'AWS EnableMFA' })
+	async enableMFASMS(
+		@Body('username') username: string,
+		@Req() req,
+		@Res() res: Response): Promise<any> {
+		const idToken = await req.headers.authorization?.split(' ')[1];
+		if (!idToken) {
+			return res.status(HttpStatus.FORBIDDEN).json({
+				statusCode: 403,
+				message: 'Forbidden',
+			});
+		}
+		const CognitoUserId = await this.cognitoService.extractUserIdFromToken(idToken);
+
+		let wynik = await this.cognitoService.enableMFA_SMS(username, CognitoUserId);
+		if (wynik) {
+			console.log('enableMFA SMS', CognitoUserId);
+			return await res.status(HttpStatus.OK).json({
+				statusCode: 200,
+				message: 'enableMFA',
+			});
+		} else {
+			console.log('Forbidden enableMFA SMS', CognitoUserId);
+			return res.status(HttpStatus.FORBIDDEN).json({
+				statusCode: 403,
+				message: 'Forbidden',
+			});
+		}
+	}
+
+	@Post('/disablemfa')
+	@UseGuards(VizCognitoGuard)
+	@ApiBearerAuth()
+	@ApiOperation({ summary: 'AWS EnableMFA' })
+	async disableMFA(
+		@Body('username') username: string,
+		@Req() req,
+		@Res() res: Response): Promise<any> {
+		const idToken = await req.headers.authorization?.split(' ')[1];
+		if (!idToken) {
+			return res.status(HttpStatus.FORBIDDEN).json({
+				statusCode: 403,
+				message: 'Forbidden',
+			});
+		}
+		const CognitoUserId = await this.cognitoService.extractUserIdFromToken(idToken);
+		let wynik = await this.cognitoService.disableMFA(username, CognitoUserId);
+		if (wynik) {
+			return await res.status(HttpStatus.OK).json({
+				statusCode: 200,
+				message: 'enableMFA',
+			});
+		} else {
+			return res.status(HttpStatus.FORBIDDEN).json({
+				statusCode: 403,
+				message: 'Forbidden',
 			});
 		}
 	}
