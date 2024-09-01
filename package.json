@@ -1,6 +1,6 @@
 {
   "name": "@vizmedia/cognito-nest-api",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Easily configurable NestJS API module to connect to AWS Cognito",
   "main": "dist/viz-cognito.module.js",
   "scripts": {
@@ -27,12 +27,12 @@
     "@aws-sdk/client-cognito-identity-provider": "^3.385.0",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.0",
-    "@nestjs/swagger": "^7.1.6",
+    "@nestjs/swagger": "^7.4.0",
     "crypto": "^1.0.1",
     "jwks-rsa": "^3.1.0",
     "mongodb": "^6.3.0",
     "mysql": "^2.18.1",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

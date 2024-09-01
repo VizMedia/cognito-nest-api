@@ -5,7 +5,6 @@ import { VizCognitoConfig } from './interfaces/viz-cognito-config.interface';
 import { VizStorageService } from './viz-storage.service';
 import { VizCognitoGuard } from './viz-cognito.guard';
 
-
 @Module({})
 export class VizCognitoModule {
 
@@ -35,34 +34,3 @@ export class VizCognitoModule {
 }
 
 
-
-
-
-
-// @Module({})
-// export class VizCognitoModule {
-//   static forRoot(config: VizCognitoConfig): DynamicModule {
-//     return {
-//       module: VizCognitoModule,
-// 			imports: [
-// 			],
-//       controllers: [
-// 				VizCognitoController
-// 			],
-//       providers: [
-//         VizCognitoService,
-//         {
-//           provide: 'VIZ_COGNITO_CONFIG',
-//           useValue: config,
-//         },
-// 				VizStorageService,
-// 				VizCognitoGuard,
-//       ],
-//       exports: [
-// 				VizCognitoService,
-// 				VizCognitoGuard,
-// 				VizStorageService,
-// 			],
-//     };
-//   }
-// }

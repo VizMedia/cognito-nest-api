@@ -11,9 +11,17 @@ export class VizStorageService {
 
   constructor(@Inject('VIZ_DATABASE_CONFIG') private config: DatabaseConfig ) {
     if (config?.type === 'mongodb') {
-      this.dbAdapter = new MongoDbAdapter(config);
+      try {
+        this.dbAdapter = new MongoDbAdapter(config);
+      } catch (error) {
+        console.error('Error connecting to MongoDB:');
+      }
     } else if (config?.type === 'mysql') {
-      this.dbAdapter = new MysqlAdapter(config);
+      try {
+        this.dbAdapter = new MysqlAdapter(config);
+      } catch (error) {
+        console.error('Error connecting to MySQL:');
+      }
     }
   }
 
