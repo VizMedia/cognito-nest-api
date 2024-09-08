@@ -1,6 +1,6 @@
 {
   "name": "@vizmedia/cognito-nest-api",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Easily configurable NestJS API module to connect to AWS Cognito",
   "main": "dist/viz-cognito.module.js",
   "scripts": {

@@ -13,9 +13,11 @@ export class VizCognitoGuard implements CanActivate {
   ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+
+    
     const request = context.switchToHttp().getRequest();
     const response = context.switchToHttp().getResponse();
-
+    
     let inHeaderToken = await request.headers.authorization?.split(' ')[1];
 
     
@@ -42,9 +44,9 @@ export class VizCognitoGuard implements CanActivate {
       return true;
     } catch (error) {
 
-      console.log(CognitoUserId, 'GUARD: token error:', error.message);
+      // console.log(CognitoUserId, 'GUARD: token error:', error.message);
  
-      if (error instanceof TokenExpiredError) {
+      // if (error instanceof TokenExpiredError) {
         const newTokens = await this.cognitoService.refreshToken(CognitoUserId, currentDbTokens);
 
         if(!newTokens.idToken || newTokens.idToken.length < 10) {
@@ -52,19 +54,15 @@ export class VizCognitoGuard implements CanActivate {
           return false;
         }
 
-        
-
         response.setHeader('X-Refresh-Token-Updated', `${newTokens.idToken}`);
         request.headers.authorization = `Bearer ${newTokens.idToken}`;
 
         await this.storageService.updateCredentials(CognitoUserId, newTokens);
-        console.log(CognitoUserId, 'GUARD: token refreshed');
+        // console.log(CognitoUserId, 'GUARD: token refreshed');
         return true;
-      }
-
-      console.log(CognitoUserId, 'GUARD: token failed: ', error.message);
-
-      return false;
+      // }
+      // console.log(CognitoUserId, 'GUARD: token failed: ', error.message);
+      // return false;
     }
   }
 
