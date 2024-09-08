@@ -83,3 +83,10 @@ import { CognitoModule } from '@vizmedia/cognito-nest-api';
 export class AppModule {}
 ```
 
+you must use guard on every endpoint that requires token verification
+
+```typescript
+
+@UseGuards(VizCognitoGuard)
+
+```
